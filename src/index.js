@@ -6,7 +6,7 @@ import {render} from 'react-dom'
 import {AppContainer} from 'react-hot-loader'
 import {Provider} from 'react-redux'
 import App from './containers/App'
-import store from './redux/store'
+import store from './redux/store/store'
 
 const container = document.createElement('div')
 document.body.appendChild(container)

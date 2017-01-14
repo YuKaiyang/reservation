@@ -5,31 +5,52 @@ import express from 'express'
 
 const PATH = 3000
 const app = express()
-const state = []
+const state = {
+	"1": "1",
+	"2": "2",
+	"3": "3"
+}
+const list = ["1", "2", "3"]
 
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
 	res.header("Access-Control-Allow-Origin", req.get("origin"));
 	res.header("Access-Control-Allow-Credentials", true);
 	next();
 });
 
-app.get('/reservation', (req, res) => {
+app.get('/', (req, res) => {
+	console.log("获取信息")
 	const data = req.query.username
-	if (state.indexOf(data) === -1) {
-		state.push(req.query.username)
+	if (state[data]) {
+		res.json({
+			respond: list,
+			queuing: true
+		})
+	} else {
+		res.json({
+			respond: list
+		})
+	}
+})
+
+app.get('/reservation', (req, res) => {
+	console.log(req.query.username + "：预约")
+	const data = req.query.username
+	if (list.indexOf(data) === -1) {
+		list.push(req.query.username)
 	}
 	res.json({
-		respond: state
+		respond: list
 	})
 })
 
 app.get('/cancel', (req, res) => {
-	const index = state.indexOf(req.query.username)
-	if (index) {
-		state.splice(index)
-	}
+	console.log(req.query.username + "：取消预约")
+	const data = req.query.username
+	const index = list.indexOf(data)
+	list.splice(index, 1)
 	res.json({
-		respond: state
+		respond: list
 	})
 })
 
