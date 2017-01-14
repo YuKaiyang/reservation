@@ -4,26 +4,32 @@
 import React from 'react'
 import Login from '../components/Login'
 import Logout from '../components/Logout'
-import fetch from 'isomorphic-fetch'
+import Reservation from '../components/Reservation'
+import Cancel from '../components/Cancel'
+import List from '../components/List'
 import {connect} from 'react-redux'
-import {login, logout} from '../redux/actions'
+import {login, logout, fetchReservation, fetchCancel} from '../redux/actions'
 import DevTools from './DevTools'
 
-const style = {
+const usernameStyle = {
 	height: "21px",
 	display: "block"
 }
 const App = (props) => {
-	const {username, login, logout} =props
+	const {username, get} =props
 	const handleSubmit = (v) => {
-		// const res = fetch('http://localhost:3000/reservation?username=于开洋')
-		// res.then(res => res.json()).then(json => console.log(json))
-		login({username: v.username})
+		props.dispatch(login({username: v.username}))
 	}
 	const handleLogout = () => {
-		logout()
+		props.dispatch(logout());
 	}
-	const renderButton = () => {
+	const handleReservation = () => {
+		props.dispatch(fetchReservation({username: username}))
+	}
+	const handleCancel = () => {
+		props.dispatch(fetchCancel({username: username}))
+	}
+	const renderButtonLog = () => {
 		if (username === "") {
 			return (
 				<Login onSubmit={handleSubmit}/>
@@ -31,18 +37,33 @@ const App = (props) => {
 		} else {
 			return (
 				<div>
-					<span style={style}>{username}</span>
-					<Logout onClick={handleLogout}/>
+					<span style={usernameStyle}>{username}</span>
+					<Logout handleClick={handleLogout}/>
 				</div>
 			)
 		}
 	}
+	const renderButtonRe = () => {
+		if (username !== "") {
+			if (!get.queuing) {
+				return <Reservation disabled={get.isFetching}
+				                    handleClick={handleReservation}/>
+			} else {
+				return <Cancel disabled={get.isFetching}
+				               handleClick={handleCancel}/>
+			}
+		}
+	}
 	return (
 		<div>
-			{renderButton()}
+			{renderButtonLog()}
+			{renderButtonRe()}
+			<List list={get.list}/>
 			<DevTools/>
 		</div>
 	)
 }
 
-export default connect(state => ({username: state.username}), {login, logout})(App)
+const mapStateToProps = state => ({username: state.username, get: state.get})
+
+export default connect(mapStateToProps)(App)

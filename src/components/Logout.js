@@ -4,7 +4,7 @@
 import React from 'react'
 
 const Logout = (props) => {
-	return <button onClick={props.onClick}>注销</button>
+	return <button onClick={props.handleClick}>注销</button>
 }
 
 export default Logout
