@@ -31,7 +31,7 @@ export const fetchLogin = payload => {
 				} else {
 					dispatch(getListReceive({list: json.respond}))
 				}
-			})
+			}).catch(e => console.log(e))
 	}
 }
 
@@ -40,7 +40,7 @@ export const fetchList = payload => {
 		dispatch(getListRequest(payload))
 		return fetch(`http://localhost:3000/`)
 			.then(response => response.json())
-			.then(json => dispatch(getListReceive({list: json.respond})))
+			.then(json => dispatch(getListReceive({list: json.respond}))).catch(e => console.log(e))
 	}
 }
 
@@ -49,7 +49,7 @@ export const fetchReservation = payload => {
 		dispatch(reservationRequest(payload))
 		return fetch(`http://localhost:3000/reservation?username=${payload.username}`)
 			.then(response => response.json())
-			.then(json => dispatch(reservationReceive({list: json.respond})))
+			.then(json => dispatch(reservationReceive({list: json.respond}))).catch(e => console.log(e))
 	}
 }
 
@@ -58,6 +58,6 @@ export const fetchCancel = payload => {
 		dispatch(cancelRequest(payload))
 		return fetch(`http://localhost:3000/cancel?username=${payload.username}`)
 			.then(response => response.json())
-			.then(json => dispatch(cancelReceive({list: json.respond})))
+			.then(json => dispatch(cancelReceive({list: json.respond}))).catch(e => console.log(e))
 	}
 }
