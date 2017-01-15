@@ -5,12 +5,7 @@ import express from 'express'
 
 const PATH = 3000
 const app = express()
-const state = {
-	"1": "1",
-	"2": "2",
-	"3": "3"
-}
-const list = ["1", "2", "3"]
+const list = []
 
 app.use((req, res, next) => {
 	res.header("Access-Control-Allow-Origin", req.get("origin"));
@@ -19,9 +14,9 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res) => {
-	console.log("获取信息")
 	const data = req.query.username
-	if (state[data]) {
+	if (list.indexOf(data) !== -1) {
+		console.log("用户已预约")
 		res.json({
 			respond: list,
 			queuing: true

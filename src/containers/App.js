@@ -75,13 +75,16 @@ class App extends React.Component {
 
 	componentDidMount() {
 		if (document.cookie.length > 0) {
+			const cookie = document.cookie.match(/username=/)
+			const userCookie = cookie.input.slice(9)
+			this.props.dispatch(actions.fetchLogin({username: userCookie}))
 		}
 		this.props.dispatch(actions.fetchList())
 	}
 
 	handleSubmit = (v) => {
 		document.cookie = "username=" + v.username
-		this.props.dispatch(actions.login({username: v.username}))
+		this.props.dispatch(actions.fetchLogin({username: v.username}))
 	}
 	handleLogout = () => {
 		this.props.dispatch(actions.logout());
