@@ -15,12 +15,25 @@ app.use((req, res, next) => {
   next()
 })
 
+// app.ws('/', (ws, req) => {
+//   ws.on('message', msg => {
+//     console.log(1)
+//   })
+//   const circle = () => {
+//     ws.send(JSON.stringify(list), msg => {
+//       console.log(2)
+//     })
+//     setTimeout(() => circle(), 2000)
+//   }
+//   circle()
+// })
+
 app.ws('/', (ws, req) => {
   ws.on('message', msg => {
-    console.log(1)
-  })
-  ws.send(JSON.stringify(list), msg => {
-    console.log(2)
+    console.log(msg)
+    ws.send(JSON.stringify(list), msg => {
+      console.log(2)
+    })
   })
 })
 

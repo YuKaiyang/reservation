@@ -25,10 +25,12 @@ ws.onerror = function (err) {
 };
 ws.onopen = function () {
   console.log('_connect')
+  ws.send("test")
 };
 ws.onclose = function () {
   console.log('_close');
 };
+
 
 render(<Provider store={store}>
     <AppContainer>
