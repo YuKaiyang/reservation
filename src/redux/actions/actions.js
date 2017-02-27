@@ -20,6 +20,19 @@ export const cancelRequest = createAction("CANCEL_REQUEST")
 
 export const cancelReceive = createAction("CANCEL_RECEIVE")
 
+const ws = new WebSocket('ws:10.2.54.207:3000/')
+
+ws.onerror = function (err) {
+  console.log('_error');
+  console.log(err);
+};
+ws.onopen = function () {
+  console.log('_connect')
+};
+ws.onclose = function () {
+  console.log('_close');
+}
+
 export const fetchLogin = payload => {
   return dispatch => {
     dispatch(login(payload))
@@ -47,6 +60,10 @@ export const fetchList = payload => {
 export const fetchReservation = payload => {
   return dispatch => {
     dispatch(reservationRequest(payload))
+    ws.send("test")
+    ws.onmessage = e => {
+      console.log(e.data);
+    }
     return fetch(`http://10.2.54.207:3000/reservation?username=${payload.username}`)
       .then(response => response.json())
       .then(json => dispatch(reservationReceive({list: json.respond}))).catch(e => console.log(e))

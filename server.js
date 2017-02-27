@@ -32,7 +32,6 @@ app.ws('/', (ws, req) => {
   ws.on('message', msg => {
     console.log(msg)
     ws.send(JSON.stringify(list), msg => {
-      console.log(2)
     })
   })
 })
