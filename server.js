@@ -1,12 +1,10 @@
 /**
  * Created by 5820k on 2017/1/14.
  */
-import express from 'express'
-import expressWs from 'express-ws'
-const app = express()
-expressWs(app)
-
-const PATH = 3000
+const app = require('express')()
+const server = require('http').createServer(app)
+const io = require('socket.io')(server)
+const PORT = require('./src/constants').PORT
 const list = []
 
 app.use((req, res, next) => {
@@ -15,25 +13,12 @@ app.use((req, res, next) => {
   next()
 })
 
-// app.ws('/', (ws, req) => {
-//   ws.on('message', msg => {
-//     console.log(1)
-//   })
-//   const circle = () => {
-//     ws.send(JSON.stringify(list), msg => {
-//       console.log(2)
-//     })
-//     setTimeout(() => circle(), 2000)
-//   }
-//   circle()
-// })
+io.on('connection', socket => {
+  console.log("新用户登录")
 
-
-app.ws('/', (ws, req) => {
-  ws.on('message', msg => {
-    console.log(msg)
-    ws.send(JSON.stringify(list), msg => {
-    })
+  socket.on('login', obj => {
+    console.log(obj)
+    io.emit('login', list)
   })
 })
 
@@ -73,6 +58,6 @@ app.get('/cancel', (req, res) => {
   })
 })
 
-app.listen(PATH, () => {
-  console.log(`The server run The http://localhost:${PATH}`)
+server.listen(PORT, () => {
+  console.log(`The server run The http://localhost:${PORT}`)
 })

@@ -2,7 +2,9 @@
  * Created by 5820k on 2017/1/14.
  */
 import {createAction} from 'redux-act'
-import fetch from 'isomorphic-fetch'
+import 'whatwg-fetch'
+import {URL, PORT} from '../../constants'
+import io from 'socket.io-client'
 
 export const login = createAction("LOGIN")
 
@@ -20,23 +22,16 @@ export const cancelRequest = createAction("CANCEL_REQUEST")
 
 export const cancelReceive = createAction("CANCEL_RECEIVE")
 
-const ws = new WebSocket('ws:10.2.54.207:3000/')
-
-ws.onerror = function (err) {
-  console.log('_error');
-  console.log(err);
-};
-ws.onopen = function () {
-  console.log('_connect')
-};
-ws.onclose = function () {
-  console.log('_close');
-}
+const socket = io(`ws://${URL}:${PORT}`)
+socket.emit('login', {name: "yky"})
+socket.on('login', e => {
+  console.log(e)
+})
 
 export const fetchLogin = payload => {
   return dispatch => {
     dispatch(login(payload))
-    return fetch(`http://10.2.54.207:3000/?username=${payload.username}`)
+    return fetch(`http://${URL}:${PORT}/?username=${payload.username}`)
       .then(response => response.json())
       .then(json => {
         if (json.queuing) {
@@ -51,7 +46,7 @@ export const fetchLogin = payload => {
 export const fetchList = payload => {
   return dispatch => {
     dispatch(getListRequest(payload))
-    return fetch(`http://10.2.54.207:3000/`)
+    return fetch(`http://${URL}:${PORT}/`)
       .then(response => response.json())
       .then(json => dispatch(getListReceive({list: json.respond}))).catch(e => console.log(e))
   }
@@ -60,11 +55,7 @@ export const fetchList = payload => {
 export const fetchReservation = payload => {
   return dispatch => {
     dispatch(reservationRequest(payload))
-    ws.send("test")
-    ws.onmessage = e => {
-      console.log(e.data);
-    }
-    return fetch(`http://10.2.54.207:3000/reservation?username=${payload.username}`)
+    return fetch(`http://${URL}:${PORT}/reservation?username=${payload.username}`)
       .then(response => response.json())
       .then(json => dispatch(reservationReceive({list: json.respond}))).catch(e => console.log(e))
   }
@@ -73,7 +64,7 @@ export const fetchReservation = payload => {
 export const fetchCancel = payload => {
   return dispatch => {
     dispatch(cancelRequest(payload))
-    return fetch(`http://10.2.54.207:3000/cancel?username=${payload.username}`)
+    return fetch(`http://${URL}:${PORT}/cancel?username=${payload.username}`)
       .then(response => response.json())
       .then(json => dispatch(cancelReceive({list: json.respond}))).catch(e => console.log(e))
   }

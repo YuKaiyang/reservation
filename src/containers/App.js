@@ -19,17 +19,14 @@ const usernameStyle = {
 class App extends React.Component {
   constructor(props) {
     super(props)
-    this.handleSubmit = this::this.handleSubmit
-    this.handleLogout = this::this.handleLogout
-    this.handleReservation = this::this.handleReservation
-    this.handleCancel = this::this.handleCancel
   }
 
   componentDidMount() {
     if (document.cookie.length > 0) {
-      const cookie = document.cookie.match(/usernameSpc=.*;?$/)
+      const cookie = document.cookie.match(/usernameSpc=\S*/)
       if (cookie) {
-        const userCookie = cookie[0].slice(12)
+        let userCookie = cookie[0].slice(12)
+        userCookie = userCookie.replace(';', '')
         this.props.dispatch(actions.fetchLogin({username: userCookie}))
       }
     }
