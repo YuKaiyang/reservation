@@ -23,23 +23,18 @@ export const cancelRequest = createAction("CANCEL_REQUEST")
 export const cancelReceive = createAction("CANCEL_RECEIVE")
 
 const socket = io(`ws://${URL}:${PORT}`)
-socket.emit('login', {name: "yky"})
-socket.on('login', e => {
-  console.log(e)
-})
 
 export const fetchLogin = payload => {
   return dispatch => {
     dispatch(login(payload))
-    return fetch(`http://${URL}:${PORT}/?username=${payload.username}`)
-      .then(response => response.json())
-      .then(json => {
-        if (json.queuing) {
-          dispatch(reservationReceive({list: json.respond}))
-        } else {
-          dispatch(getListReceive({list: json.respond}))
-        }
-      }).catch(e => console.log(e))
+    socket.emit('login', payload.username)
+    socket.once('login', json => {
+      if (json.queuing) {
+        dispatch(reservationReceive({list: json.respond}))
+      } else {
+        dispatch(getListReceive({list: json.respond}))
+      }
+    })
   }
 }
 
@@ -55,17 +50,19 @@ export const fetchList = payload => {
 export const fetchReservation = payload => {
   return dispatch => {
     dispatch(reservationRequest(payload))
-    return fetch(`http://${URL}:${PORT}/reservation?username=${payload.username}`)
-      .then(response => response.json())
-      .then(json => dispatch(reservationReceive({list: json.respond}))).catch(e => console.log(e))
+    socket.emit('reservation', payload.username)
+    socket.once('reservation', json => {
+      dispatch(reservationReceive({list: json.respond}))
+    })
   }
 }
 
 export const fetchCancel = payload => {
   return dispatch => {
     dispatch(cancelRequest(payload))
-    return fetch(`http://${URL}:${PORT}/cancel?username=${payload.username}`)
-      .then(response => response.json())
-      .then(json => dispatch(cancelReceive({list: json.respond}))).catch(e => console.log(e))
+    socket.emit('cancel', payload.username)
+    socket.once('cancel', json => {
+      dispatch(cancelReceive({list: json.respond}))
+    })
   }
 }
